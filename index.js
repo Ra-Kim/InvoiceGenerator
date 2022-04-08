@@ -23,33 +23,41 @@ window.onload = function buttonDisplay(){
     let buttons=""
     let localArray =[]
     let sum = 0
+    let isSelected = false
     for(let i =0; i<button.length;i++){
         buttons += `<li><button class = "task-button" id = "task-button${i+1}">${button[i].name}:  $${button[i].price}</button></li>`
     }
     ulEl.innerHTML=buttons
 
     let tasksFromLocalStorage = JSON.parse( localStorage.getItem("tasks") )
+    let storedSum = localStorage.getItem("totalSum")
+    let localSelect = localStorage.getItem("isSelected")
 
-    function renderTask(){
-        if (tasksFromLocalStorage){
-            localArray=tasksFromLocalStorage
-            for(let i =0; i<localArray.length;i++){
-              tasks += localArray[i]
-          }
-          taskList.innerHTML = tasks
-          }
-    }
+    
+    if (tasksFromLocalStorage, storedSum){
+        localArray=tasksFromLocalStorage
+        for(let i =0; i<localArray.length;i++){
+            tasks += localArray[i]
+        }
+        taskList.innerHTML = tasks
+        totalSum.textContent = "$" + storedSum
+        spanNote.textContent = "We accept cash, credit card, or PayPal"
+        }
+    
 
     
 
     document.querySelectorAll(".task-button").forEach(elem =>{
         elem.addEventListener("click", function(){
+            if(localSelect == true || localSelect == undefined)
             processButton(elem)
             spanNote.textContent = "We accept cash, credit card, or PayPal"
         })
-        
+
         function processButton(button) {
-            button.disabled = true;
+            isSelected = true
+            button.disabled = isSelected;
+            localStorage.setItem("isSelected", isSelected)
             tasks = ""
             const values = button.innerHTML.split(" ");
             let taskName = values[0] +" "+ values[1].replace(":",'')
@@ -60,21 +68,22 @@ window.onload = function buttonDisplay(){
                               </li>`
             taskArray.push(taskLiteral)
             localStorage.setItem("tasks", JSON.stringify(taskArray) )
-            tasksFromLocalStorage = JSON.parse( localStorage.getItem("tasks") )
-            if (tasksFromLocalStorage){
-              localArray=tasksFromLocalStorage
-            }
-                for(let i =0; i<localArray.length;i++){
-                    tasks += localArray[i]
+            // tasksFromLocalStorage = JSON.parse( localStorage.getItem("tasks") )
+            // if (tasksFromLocalStorage){
+            //   localArray=tasksFromLocalStorage
+            // }
+                for(let i =0; i<taskArray.length;i++){
+                    tasks += taskArray[i]
                 }
             sum += Number(taskPrice)
+            localStorage.setItem ("totalSum", sum )
             totalSum.textContent = "$" + sum
             taskList.innerHTML = tasks
         }
     })
 
     document.getElementById("reset-button").addEventListener("click", function(){
-        localStorage.clear()
+        localStorage.clear("tasks")
         taskArray = []
         taskList.innerHTML = ""
         spanNote.textContent = ""
