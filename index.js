@@ -24,7 +24,6 @@ window.onload = function buttonDisplay(){
     let buttons=""
     let localArray =[]
     let sum = 0
-    let isSelected = false
     for(let i =0; i<button.length;i++){
         buttons += `<li><button class = "task-button" id = "task-button${i+1}">${button[i].name}:  $${button[i].price}</button></li>`
     }
@@ -32,9 +31,7 @@ window.onload = function buttonDisplay(){
 
     let tasksFromLocalStorage = JSON.parse( localStorage.getItem("tasks") )
     let particular = JSON.parse( localStorage.getItem("particular") )
-
     let storedSum = localStorage.getItem("totalSum")
-    let localSelect = localStorage.getItem("isSelected")
 
     
     if (tasksFromLocalStorage){
@@ -64,9 +61,6 @@ window.onload = function buttonDisplay(){
         })
 
         function processButton(button) {
-            isSelected = true
-            // button.disabled = isSelected;
-            localStorage.setItem("isSelected", isSelected)
             tasks = ""
             const values = button.innerHTML.split(" ");
             let taskName = values[0] +" "+ values[1].replace(":",'')
@@ -75,16 +69,15 @@ window.onload = function buttonDisplay(){
                                 <div><p class = "task-name" id = "task">${taskName} <span class = "delete-span">(remove)</span><p></div>
                                 <div> <p id ="task-price"><span id = "price-span">$</span>${taskPrice}<p></div>
                               </li>`
+
             if(tasksFromLocalStorage){
                 taskArray = localArray
             }
+
             taskArray.push(taskLiteral)
             localStorage.setItem("tasks", JSON.stringify(taskArray) )
             let storedSum = localStorage.getItem("totalSum")
-            // tasksFromLocalStorage = JSON.parse( localStorage.getItem("tasks") )
-            // if (tasksFromLocalStorage){
-            //   localArray=tasksFromLocalStorage
-            // }
+            
             if(!tasksFromLocalStorage){
                 for(let i =0; i<taskArray.length;i++){
                     tasks += taskArray[i]
