@@ -19,6 +19,7 @@ window.onload = function buttonDisplay(){
     let totalSum = document.getElementById("total-price")
     let spanNote = document.getElementById("notes-span")
     let taskArray = []
+    let elemArray = []
     let tasks = ""
     let buttons=""
     let localArray =[]
@@ -30,11 +31,13 @@ window.onload = function buttonDisplay(){
     ulEl.innerHTML=buttons
 
     let tasksFromLocalStorage = JSON.parse( localStorage.getItem("tasks") )
+    let particular = JSON.parse( localStorage.getItem("particular") )
+
     let storedSum = localStorage.getItem("totalSum")
     let localSelect = localStorage.getItem("isSelected")
 
     
-    if (tasksFromLocalStorage, storedSum){
+    if (tasksFromLocalStorage){
         localArray=tasksFromLocalStorage
         for(let i =0; i<localArray.length;i++){
             tasks += localArray[i]
@@ -42,6 +45,7 @@ window.onload = function buttonDisplay(){
         taskList.innerHTML = tasks
         totalSum.textContent = "$" + storedSum
         spanNote.textContent = "We accept cash, credit card, or PayPal"
+        tasks = ""
         }
     
 
@@ -49,14 +53,19 @@ window.onload = function buttonDisplay(){
 
     document.querySelectorAll(".task-button").forEach(elem =>{
         elem.addEventListener("click", function(){
-            if(localSelect == true || localSelect == undefined)
-            processButton(elem)
-            spanNote.textContent = "We accept cash, credit card, or PayPal"
+            if(particular == null || !particular.includes(elem)){
+                if(elemArray == null || !elemArray.includes(elem)){
+                    processButton(elem)
+                    spanNote.textContent = "We accept cash, credit card, or PayPal"
+                }
+                elemArray.push(elem)
+                localStorage.setItem("particular", JSON.stringify(elemArray))
+            }
         })
 
         function processButton(button) {
             isSelected = true
-            button.disabled = isSelected;
+            // button.disabled = isSelected;
             localStorage.setItem("isSelected", isSelected)
             tasks = ""
             const values = button.innerHTML.split(" ");
@@ -66,16 +75,31 @@ window.onload = function buttonDisplay(){
                                 <div><p class = "task-name" id = "task">${taskName} <span class = "delete-span">(remove)</span><p></div>
                                 <div> <p id ="task-price"><span id = "price-span">$</span>${taskPrice}<p></div>
                               </li>`
+            if(tasksFromLocalStorage){
+                taskArray = localArray
+            }
             taskArray.push(taskLiteral)
             localStorage.setItem("tasks", JSON.stringify(taskArray) )
+            let storedSum = localStorage.getItem("totalSum")
             // tasksFromLocalStorage = JSON.parse( localStorage.getItem("tasks") )
             // if (tasksFromLocalStorage){
             //   localArray=tasksFromLocalStorage
             // }
+            if(!tasksFromLocalStorage){
                 for(let i =0; i<taskArray.length;i++){
                     tasks += taskArray[i]
                 }
-            sum += Number(taskPrice)
+            sum += Number(taskPrice) 
+
+            }else{
+                for(let i =0; i<localArray.length;i++){
+                    tasks += localArray[i]
+                }
+            sum = Number(taskPrice) + Number(storedSum)
+
+            }
+                
+            // sum = Number(taskPrice) + storedSum
             localStorage.setItem ("totalSum", sum )
             totalSum.textContent = "$" + sum
             taskList.innerHTML = tasks
@@ -83,8 +107,13 @@ window.onload = function buttonDisplay(){
     })
 
     document.getElementById("reset-button").addEventListener("click", function(){
+        tasks = ""
         localStorage.clear("tasks")
+        localStorage.clear("totalSum")
+        localStorage.clear("particular")
         taskArray = []
+        elemArray = []
+        localArray =[]
         taskList.innerHTML = ""
         spanNote.textContent = ""
         sum = 0
