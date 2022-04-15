@@ -86,8 +86,10 @@ window.onload = function buttonDisplay() {
   function processButton(button) {
     tasks = "";
     const values = button.innerHTML.split(" ");
-    let taskName = values[0] + " " + values[1].replace(":", "");
-    let taskPrice = values[3].replace(/[^\d.]/g, "");
+    console.log(values.slice(16));
+    const truncdValues = values.slice(16);
+    let taskName = truncdValues[0] + " " + truncdValues[1].replace(":", "");
+    let taskPrice = truncdValues[2].replace(/[^\d.]/g, "");
     let taskLiteral = `<li>
                                 <div><p class = "task-name" id = "task">${taskName} <span class = "delete-span">(remove)</span><p></div>
                                 <div> <p id ="task-price"><span id = "price-span">$</span>${taskPrice}<p></div>
