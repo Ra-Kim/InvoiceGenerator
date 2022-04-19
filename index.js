@@ -1,21 +1,3 @@
-let button = [
-  (one = {
-    name: "Wash Car",
-    price: 10,
-    state: false,
-  }),
-  (two = {
-    name: "Mow Lawn",
-    price: 20,
-    state: false,
-  }),
-  (three = {
-    name: "Pull Weeds",
-    price: 30,
-    state: false,
-  }),
-];
-
 let buttonList = [
   {
     id: "task-button1",
@@ -42,32 +24,18 @@ const setBtnIDToLocalStorage = (button) => {
   localStorage.setItem(button, true);
 
   document.getElementById(button).setAttribute("disabled", true);
-};
+}; // stores a value in localstorage when button is clicked, and disables the button
 const isBtnDisabled = (button) => {
   if (localStorage.getItem(button)) {
     document.getElementById(button).setAttribute("disabled", true);
   }
-};
+}; //checks if button is disabled
 
 window.onload = function buttonDisplay() {
-  //   for (let i = 0; i < button.length; i++) {
-  //     buttons += `<li><button class = "task-button" id = "task-button${i + 1}">${
-  //       button[i].name
-  //     }:  $${button[i].price}</button></li>`;
-  //   }
-  //   ulEl.innerHTML = buttons;
-
-  // const buttonList = button
-  //   .map((button, i) => {
-  //     return `<li><button class = "task-button" >${button.name}:  $${button.price}</button></li>`;
-  //   })
-  //   .join("");
-  // ulEl.innerHTML = buttonList;
-
   let particular = JSON.parse(localStorage.getItem("particular"));
 
   document.querySelectorAll(".task-button").forEach((elem) => {
-    isBtnDisabled(elem.id);
+    isBtnDisabled(elem.id); // calls as soon as the page loads, before the button is clicked on
     elem.addEventListener("click", function () {
       if (particular == null || !particular.includes(elem)) {
         if (elemArray == null || !elemArray.includes(elem)) {
@@ -75,7 +43,7 @@ window.onload = function buttonDisplay() {
           spanNote.textContent = "We accept cash, credit card, or PayPal";
         }
         elemArray.push(elem);
-        setBtnIDToLocalStorage(elem.id);
+        setBtnIDToLocalStorage(elem.id); //
         console.log(elem, "elem");
 
         localStorage.setItem("particular", JSON.stringify(elemArray));
