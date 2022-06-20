@@ -88,7 +88,9 @@ ul{
 .delete-span{
     font-size:10px ;
     font-weight: lighter;
+    cursor: pointer;
 }
+
 
 #price-span{
     font-weight: lighter;

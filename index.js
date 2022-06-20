@@ -1,107 +1,116 @@
-let buttonList = [
-  {
-    id: "task-button1",
-  },
-  {
-    id: "task-button2",
-  },
-  {
-    id: "task-button3",
-  },
-];
-
 let ulEl = document.getElementById("ulEl");
 let taskList = document.getElementById("task-list");
 let totalSum = document.getElementById("total-price");
 let spanNote = document.getElementById("notes-span");
 let taskArray = [];
-let elemArray = [];
+let count = 0;
 let tasks = "";
+let taskPrice = ""
 let buttons = "";
 let localArray = [];
+let newArray = [];
 let sum = 0;
-const setBtnIDToLocalStorage = (button) => {
-  localStorage.setItem(button, true);
+let storedSum = localStorage.getItem("totalSum");
+let tasksFromLocalStorage = JSON.parse(localStorage.getItem("tasks"));
 
-  document.getElementById(button).setAttribute("disabled", true);
-}; // stores a value in localstorage when button is clicked, and disables the button
-const isBtnDisabled = (button) => {
-  if (localStorage.getItem(button)) {
-    document.getElementById(button).setAttribute("disabled", true);
+
+function renderTaskList(data){
+  localStorage.setItem("tasks", JSON.stringify(data));
+  let storedSum = localStorage.getItem("totalSum");
+
+  for (const task of data) {
+    tasks += `<li id = "task${task.taskPrice}">
+                  <div>
+                  <p 
+                  class = "task-name" 
+                  > ${task.taskName} 
+                  <span class = "delete-span" onclick = "deleteBtn(${task.id}, ${task.taskPrice})">(remove)</span>
+                  <p>
+                  </div>
+                  <div> <p id ="task-price"><span id = "price-span">$</span>${task.taskPrice}<p></div>
+              </li>`;
   }
-}; //checks if button is disabled
+  if (!tasksFromLocalStorage) {
+    sum += Number(taskPrice);
+  } else {
+    sum = Number(taskPrice) + Number(storedSum);
+  }
+
+  localStorage.setItem("totalSum", sum);
+  totalSum.textContent = "$" + sum;
+  taskList.innerHTML = tasks;
+}
+
+function deleteBtn(event,num){
+  let storedSum = localStorage.getItem("totalSum");
+  tasks = ""
+
+    taskPrice = Number(num);
+    if(tasksFromLocalStorage){
+      newArray = localArray.filter(elem => elem.id !== Number(event))
+      localArray = newArray
+      sum = Number(storedSum) - Number(2 * taskPrice)
+      localStorage.setItem("totalSum", sum);
+      renderTaskList(newArray)
+
+    }else {
+    newArray = taskArray.filter(elem => elem.id !== Number(event))
+    taskArray = newArray; 
+    sum -= Number(2 * taskPrice);
+    renderTaskList(newArray)
+
+  }
+  
+}
+
 
 window.onload = function buttonDisplay() {
-  let particular = JSON.parse(localStorage.getItem("particular"));
 
   document.querySelectorAll(".task-button").forEach((elem) => {
-    isBtnDisabled(elem.id); // calls as soon as the page loads, before the button is clicked on
     elem.addEventListener("click", function () {
-      if (particular == null || !particular.includes(elem)) {
-        if (elemArray == null || !elemArray.includes(elem)) {
           processButton(elem);
           spanNote.textContent = "We accept cash, credit card, or PayPal";
-        }
-        elemArray.push(elem);
-        setBtnIDToLocalStorage(elem.id); //
-        console.log(elem, "elem");
-
-        localStorage.setItem("particular", JSON.stringify(elemArray));
-      }
     });
   });
+
+  if (tasksFromLocalStorage) {
+    localArray = tasksFromLocalStorage;
+    renderTaskList(localArray)
+    totalSum.textContent = "$" + storedSum;
+    spanNote.textContent = "We accept cash, credit card, or PayPal";
+    tasks = "";
+  }
+
+ 
 
   function processButton(button) {
     tasks = "";
     const values = button.innerHTML.split(" ");
-    console.log(values.slice(16));
     const truncdValues = values.slice(16);
     let taskName = truncdValues[0] + " " + truncdValues[1].replace(":", "");
-    let taskPrice = truncdValues[2].replace(/[^\d.]/g, "");
-    let taskLiteral = `<li>
-                                <div><p class = "task-name" id = "task">${taskName} <span class = "delete-span">(remove)</span><p></div>
-                                <div> <p id ="task-price"><span id = "price-span">$</span>${taskPrice}<p></div>
-                              </li>`;
+    taskPrice = truncdValues[2].replace(/[^\d.]/g, "");
+    let taskLiteral = {
+       id: count,
+       taskName,
+       taskPrice
+    }
+    count += 1;
 
     if (tasksFromLocalStorage) {
       taskArray = localArray;
     }
 
-    taskArray.push(taskLiteral);
-    localStorage.setItem("tasks", JSON.stringify(taskArray));
-    let storedSum = localStorage.getItem("totalSum");
-
-    if (!tasksFromLocalStorage) {
-      for (let i = 0; i < taskArray.length; i++) {
-        tasks += taskArray[i];
-      }
-      sum += Number(taskPrice);
-    } else {
-      for (let i = 0; i < localArray.length; i++) {
-        tasks += localArray[i];
-      }
-      sum = Number(taskPrice) + Number(storedSum);
-    }
-
-    // sum = Number(taskPrice) + storedSum
-    localStorage.setItem("totalSum", sum);
-    totalSum.textContent = "$" + sum;
-    taskList.innerHTML = tasks;
+    if(taskArray.filter(task => task.taskName === taskName).length < 1){
+      taskArray.push(taskLiteral);
+    
+      renderTaskList(taskArray)
+    }    
   }
 
-  let tasksFromLocalStorage = JSON.parse(localStorage.getItem("tasks"));
-  let storedSum = localStorage.getItem("totalSum");
 
-  if (tasksFromLocalStorage) {
-    localArray = tasksFromLocalStorage;
-    for (let i = 0; i < localArray.length; i++) {
-      tasks += localArray[i];
-    }
-    taskList.innerHTML = tasks;
-    totalSum.textContent = "$" + storedSum;
-    spanNote.textContent = "We accept cash, credit card, or PayPal";
-    tasks = "";
-  }
+  
+
+  
 
   document
     .getElementById("reset-button")
@@ -120,4 +129,6 @@ window.onload = function buttonDisplay() {
         elem.disabled = false;
       });
     });
+  
+  
 };
