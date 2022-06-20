@@ -111,7 +111,6 @@ window.onload = function buttonDisplay() {
       localStorage.clear("totalSum");
       localStorage.clear("particular");
       taskArray = [];
-      elemArray = [];
       localArray = [];
       taskList.innerHTML = "";
       spanNote.textContent = "";
